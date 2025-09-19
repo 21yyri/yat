@@ -29,14 +29,8 @@ def session(url, token):
 @click.argument('url')
 @click.option('-h', flag_value = True, default = False, help = 'Inclui busca de token registrado no banco de sessões.')
 def get(url, h):
-    headers = {}
     if h:
-        link, endpoint = root_link(url)
-        token = get_session(link)
-
-        headers = {
-            "Authorization": f"Bearer {token}"
-        }
+        headers = assemble_header(url)
 
     response = requests.get(url, headers = headers)
 
@@ -47,23 +41,33 @@ def get(url, h):
 @yat.command()
 @click.argument('url')
 @click.argument('json', nargs = -1)
-def post(url, json):
+@click.option('-h', flag_value = True, default = False, help = 'Inclui busca de token registrado no banco de sessões.')
+def post(url, json, h):
     data = {}
     for attr in json:
         key, value = attr.split(':', 1)
         data[key.strip()] = value.strip()
     
-    sess = cursor.execute("SELECT * FROM sessions").fetchall()
-    header = {}
-    if sess:
-        for key in sess:
-            if not url.startswith(sess[0]):
-                continue
-            link, token = key
-        header = {'Authorization': f'Bearer {token}'}
-    
+    if h:
+        headers = assemble_header(url)
+
     response = requests.post(
-        url, json = data, headers = header or None
+        url, json = data, headers = headers, 
+    )
+
+    click.echo(response.status_code)
+    click.echo(response.json())
+
+
+@yat.command()
+@click.argument('url')
+@click.option('-h', flag_value = True, default = False, help = 'Inclui busca de token registrado no banco de sessões.')
+def delete(url, h):
+    if h:
+        headers = assemble_header(url)
+    
+    response = requests.delete(
+        url, headers = headers
     )
 
     click.echo(response.status_code)

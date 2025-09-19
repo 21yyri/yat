@@ -53,3 +53,13 @@ def session_exists(url: str) -> bool:
     if not link:
         return False
     return True
+
+
+def assemble_header(url: str) -> dict:
+    link, endpoint = root_link(url)
+    token = get_session(link)
+    if token:
+        return {
+            "Authorization": f"Bearer {token}"
+        }
+    return {}
