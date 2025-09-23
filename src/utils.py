@@ -56,6 +56,8 @@ def session_exists(url: str) -> bool:
 
 
 def assemble_header(url: str) -> dict:
+    """Pega uma URL do banco e retorna um header com o token associad a URL."""
+
     link, endpoint = root_link(url)
     token = get_session(link)
     if token:
@@ -63,3 +65,4 @@ def assemble_header(url: str) -> dict:
             "Authorization": f"Bearer {token}"
         }
     return {}
+
