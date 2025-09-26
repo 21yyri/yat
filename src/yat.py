@@ -1,4 +1,5 @@
 import requests, click
+from pprint import pprint
 from utils import *
 
 @click.group()
@@ -17,10 +18,10 @@ def session(url, token):
     link, endpoint = root_link(url)
     if session_exists(link):
         cursor.execute("UPDATE sessions SET token = (?), endpoint = (?) WHERE url = (?)", (token, endpoint, link))
-        click.echo("SESSÃO ATUALIZADA.")
+        click.echo("Sessão atualizada.")
     else:
         cursor.execute("INSERT INTO sessions (url, endpoint, token) VALUES (?, ?, ?)", (link, endpoint, token,))
-        click.echo("SESSÃO CRIADA.")
+        click.echo("Sessão criada.")
 
     conn.commit()
 
@@ -36,7 +37,10 @@ def get(url, h):
     response = requests.get(url, headers = headers)
 
     click.echo(response.status_code)
-    click.echo(response.json())
+    try:
+        pprint(response.json())
+    except requests.exceptions.JSONDecodeError:
+        click.echo("JSON não retornado.")
 
 
 @yat.command()
@@ -45,8 +49,8 @@ def get(url, h):
 @click.option('-h', flag_value = True, default = False, help = 'Inclui busca de token registrado no banco de sessões.')
 def post(url, json, h):
     data = {}
-    for attr in json:
-        key, value = attr.split(':', 1)
+    for arg in json:
+        key, value = arg.split("=")
         data[key.strip()] = value.strip()
     
     headers = {}
@@ -58,7 +62,7 @@ def post(url, json, h):
     )
 
     click.echo(response.status_code)
-    click.echo(response.json())
+    pprint(response.json())
 
 
 @yat.command()
@@ -74,7 +78,29 @@ def delete(url, h):
     )
 
     click.echo(response.status_code)
-    click.echo(response.json())
+    pprint(response.json())
+
+
+@yat.command()
+@click.argument('url')
+@click.argument('json', nargs = -1)
+@click.option('-h', flag_value = True, default = False, help = 'Inclui busca de token registrado no banco de sessões.')
+def put(url, json, h):
+    data = {}
+    for arg in json:
+        key, value = arg.split("=")
+        data[key.strip()] = value.strip()
+    
+    headers = {}
+    if h:
+        headers = assemble_header(url)
+    
+    response = requests.put(
+        url, headers = headers
+    )
+
+    click.echo(response.status_code)
+    pprint(response.json())
 
 
 @yat.command()
