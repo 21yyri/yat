@@ -29,6 +29,7 @@ def session(url, token):
 @click.argument('url')
 @click.option('-h', flag_value = True, default = False, help = 'Inclui busca de token registrado no banco de sessões.')
 def get(url, h):
+    headers = {}
     if h:
         headers = assemble_header(url)
 
@@ -48,6 +49,7 @@ def post(url, json, h):
         key, value = attr.split(':', 1)
         data[key.strip()] = value.strip()
     
+    headers = {}
     if h:
         headers = assemble_header(url)
 
@@ -63,12 +65,33 @@ def post(url, json, h):
 @click.argument('url')
 @click.option('-h', flag_value = True, default = False, help = 'Inclui busca de token registrado no banco de sessões.')
 def delete(url, h):
+    headers = {}
     if h:
         headers = assemble_header(url)
     
     response = requests.delete(
         url, headers = headers
     )
+
+    click.echo(response.status_code)
+    click.echo(response.json())
+
+
+@yat.command()
+@click.argument('url')
+@click.argument('json', nargs = -1)
+@click.option('-h', flag_value = True, default = False, help = 'Inclui busca de token registrado no banco de sessões.')
+def update(url, json, h):
+    data = {}
+    for attr in json:
+        key, value = attr.split(':', 1)
+        data[key.strip()] = value.strip()
+
+    headers = {}
+    if h:
+        headers = assemble_header(url)
+    
+    response = requests.put(url, json = data, headers = headers)
 
     click.echo(response.status_code)
     click.echo(response.json())
