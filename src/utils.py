@@ -64,13 +64,13 @@ def response_code_output(status: int) -> str:
     """Colore o código no terminal."""
     match str(status)[0]:
         case '2':
-            return f'\033[92m[{status}]\033[00m'
+            return f'\033[92m[{status}]\033[0m'
         case '3':
-            return f'\033[94m[{status}]\033[00m'
+            return f'\033[94m[{status}]\033[0m'
         case '4':
-            return f'\033[91m[{status}]\033[00m'
+            return f'\033[91m[{status}]\033[0m'
         case '5':
-            return f'\033[38;2;255;165;0m[{status}]\033[00m'
+            return f'\033[33m[{status}]\033[0m'
 
 
 def status_message(status: int) -> str:
