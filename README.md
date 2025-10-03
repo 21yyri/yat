@@ -1,4 +1,4 @@
-# YAT - Yet Another Terminal Http Client
+# YAT - Yet Another Api Testing Tool
 
 Yat é uma ferramenta de linha de comando que permite o envio de requisições HTTP com acesso a persistência de tokens de autenticação e histórico de requisições.
 
